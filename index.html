@@ -91,6 +91,28 @@
         font-weight: 700;
         letter-spacing: -0.07em;
       }
+      .scale-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .scale-label,
+      .scale-value {
+        color: var(--muted);
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+      }
+      .scale-value {
+        min-width: 34px;
+        color: var(--ink);
+        text-align: center;
+      }
+      .scale-controls .button {
+        width: 32px;
+        min-height: 32px;
+        padding: 0;
+        font-size: 16px;
+      }
       .top-actions {
         gap: 10px;
       }
@@ -527,6 +549,30 @@
         <a aria-label="Tempy home" href="#" class="brand">
           <span class="brand-name">Tempy</span>
         </a>
+        <div class="scale-controls" role="group" aria-label="Page scale">
+          <span class="scale-label">Scale</span>
+          <button
+            id="scale-down"
+            class="button"
+            type="button"
+            aria-label="Decrease page scale"
+            title="Decrease page scale"
+          >
+            −
+          </button>
+          <output id="scale-value" class="scale-value" aria-live="polite"
+            >100%</output
+          >
+          <button
+            id="scale-up"
+            class="button"
+            type="button"
+            aria-label="Increase page scale"
+            title="Increase page scale"
+          >
+            +
+          </button>
+        </div>
       </header>
 
       <section class="intro">
@@ -648,8 +694,28 @@ Your finished text will appear here.</pre>
         const copyButton = document.getElementById("copy-button");
         const copyLabel = document.getElementById("copy-label");
         const announcer = document.getElementById("announcer");
+        const scaleDownButton = document.getElementById("scale-down");
+        const scaleUpButton = document.getElementById("scale-up");
+        const scaleValue = document.getElementById("scale-value");
         const values = new Map();
         let copyTimer;
+        let pageScale = 100;
+
+        function updatePageScale() {
+          document.documentElement.style.zoom = `${pageScale}%`;
+          scaleValue.textContent = `${pageScale}%`;
+          scaleDownButton.disabled = pageScale <= 80;
+          scaleUpButton.disabled = pageScale >= 130;
+        }
+
+        scaleDownButton.addEventListener("click", () => {
+          pageScale = Math.max(80, pageScale - 10);
+          updatePageScale();
+        });
+        scaleUpButton.addEventListener("click", () => {
+          pageScale = Math.min(130, pageScale + 10);
+          updatePageScale();
+        });
 
         function getPlaceholders(text) {
           const counts = new Map();
