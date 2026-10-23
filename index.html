@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta name="theme-color" content="#111714" />
+    <title>Tempy — Template Filler</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --ink: #e8eee8;
+        --muted: #9aa79d;
+        --line: #303b34;
+        --paper: #1b2420;
+        --canvas: #111714;
+        --green: #80bd8c;
+        --green-dark: #6cab78;
+        --green-wash: #26392d;
+        --shadow: 0 18px 50px rgb(0 0 0 / 22%);
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        color: var(--ink);
+        background:
+          radial-gradient(
+            ellipse at 5% 0%,
+            rgb(44 77 53 / 22%),
+            transparent 33rem
+          ),
+          var(--canvas);
+      }
+
+      button,
+      textarea,
+      input {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+
+      .shell {
+        width: min(1160px, calc(100% - 48px));
+        margin: 0 auto;
+        padding: 35px 0 52px;
+      }
+
+      .topbar,
+      .brand,
+      .top-actions,
+      .section-heading,
+      .panel-footer,
+      .preview-toolbar,
+      .preview-footer,
+      .field-label,
+      .empty-state {
+        display: flex;
+        align-items: center;
+      }
+
+      .topbar {
+        justify-content: space-between;
+        margin-bottom: 66px;
+      }
+      .brand {
+        gap: 11px;
+        color: var(--ink);
+        text-decoration: none;
+      }
+      .brand-mark {
+        display: grid;
+        width: 36px;
+        height: 36px;
+        place-items: center;
+        border-radius: 12px;
+        color: white;
+        background: var(--green);
+        font-family: Georgia, serif;
+        font-size: 22px;
+        font-weight: 700;
+        box-shadow: 0 5px 12px rgb(55 107 74 / 20%);
+      }
+      .brand-name {
+        font-size: 17px;
+        font-weight: 750;
+        letter-spacing: -0.04em;
+      }
+      .top-actions {
+        gap: 10px;
+      }
+
+      .eyebrow {
+        margin: 0 0 13px;
+        color: var(--green);
+        font-size: 11px;
+        font-weight: 750;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .intro {
+        max-width: 630px;
+        margin-bottom: 35px;
+      }
+      h1 {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(38px, 5vw, 56px);
+        font-weight: 500;
+        letter-spacing: -0.055em;
+        line-height: 1.04;
+      }
+      .intro-copy {
+        max-width: 530px;
+        margin: 16px 0 0;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.7;
+      }
+      .intro-copy code {
+        padding: 2px 6px;
+        border: 1px solid #354a39;
+        border-radius: 5px;
+        color: #a6d6ad;
+        background: #203027;
+        font-size: 0.9em;
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 18px;
+        align-items: stretch;
+      }
+
+      .panel {
+        min-width: 0;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 17px;
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .panel-header {
+        min-height: 72px;
+        padding: 16px 21px;
+        border-bottom: 1px solid var(--line);
+      }
+      .section-heading {
+        justify-content: space-between;
+        width: 100%;
+        gap: 12px;
+      }
+      .heading-title {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: -0.015em;
+      }
+      .heading-caption {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .step {
+        display: inline-grid;
+        width: 25px;
+        height: 25px;
+        margin-right: 8px;
+        place-items: center;
+        border-radius: 50%;
+        color: var(--green);
+        background: var(--green-wash);
+        font-size: 11px;
+        font-weight: 750;
+        vertical-align: -1px;
+      }
+
+      .template-wrap {
+        padding: 17px 20px 19px;
+      }
+      .template-textarea {
+        display: block;
+        width: 100%;
+        min-height: 220px;
+        resize: vertical;
+        padding: 14px 15px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        outline: none;
+        color: #343b33;
+        background: #fcfcfa;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 13px;
+        line-height: 1.75;
+        transition:
+          border-color 0.18s,
+          box-shadow 0.18s;
+      }
+      .template-textarea:focus,
+      .value-input:focus {
+        border-color: #8cae91;
+        box-shadow: 0 0 0 3px rgb(91 140 98 / 12%);
+      }
+
+      .panel-footer {
+        justify-content: space-between;
+        gap: 12px;
+        padding: 0 20px 18px;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.5;
+      }
+      .hint strong {
+        color: #535b51;
+        font-weight: 650;
+      }
+      .button {
+        display: inline-flex;
+        min-height: 37px;
+        justify-content: center;
+        align-items: center;
+        gap: 7px;
+        padding: 0 13px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: #454b43;
+        background: white;
+        font-size: 12px;
+        font-weight: 650;
+        transition:
+          background 0.15s,
+          border-color 0.15s,
+          transform 0.15s;
+        white-space: nowrap;
+      }
+      .button:hover {
+        border-color: #cbd1c7;
+        background: #fafbf8;
+      }
+      .button:active {
+        transform: translateY(1px);
+      }
+      .button-primary {
+        border-color: var(--green);
+        color: white;
+        background: var(--green);
+      }
+      .button-primary:hover {
+        border-color: var(--green-dark);
+        background: var(--green-dark);
+      }
+      .button svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .fields-area {
+        min-height: 95px;
+        max-height: 308px;
+        overflow: auto;
+        padding: 15px 20px 19px;
+        scrollbar-color: #d8ddd3 transparent;
+        scrollbar-width: thin;
+      }
+      .fields-list {
+        display: grid;
+        gap: 12px;
+      }
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+      .field-label {
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .field-name {
+        color: #454b43;
+        font-size: 12px;
+        font-weight: 650;
+      }
+      .field-occurrences {
+        color: #9a9f96;
+        font-size: 10px;
+      }
+      .value-input {
+        width: 100%;
+        min-height: 39px;
+        padding: 9px 11px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        outline: none;
+        color: var(--ink);
+        background: white;
+        font-size: 13px;
+      }
+      .empty-state {
+        min-height: 64px;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .empty-icon {
+        display: grid;
+        width: 29px;
+        height: 29px;
+        flex: 0 0 auto;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: #8b9188;
+        font-family: Georgia, serif;
+      }
+      .empty-state p {
+        margin: 0;
+      }
+
+      .preview-panel {
+        display: flex;
+        flex-direction: column;
+      }
+      .preview-toolbar {
+        min-height: 72px;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 18px 14px 21px;
+        border-bottom: 1px solid var(--line);
+      }
+      .live-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 5px;
+        color: #81877e;
+        font-size: 10px;
+      }
+      .live-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #79a77b;
+      }
+      .output {
+        flex: 1;
+        min-height: 360px;
+        margin: 0;
+        padding: 23px 23px 28px;
+        color: #41483f;
+        background:
+          linear-gradient(#fff 31px, transparent 31px) 0 22px / 100% 32px,
+          #fff;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 12px;
+        line-height: 2;
+        overflow-wrap: anywhere;
+        white-space: pre-wrap;
+        tab-size: 2;
+      }
+      .output.is-empty {
+        color: #9a9f96;
+        font-family: inherit;
+        font-style: italic;
+      }
+      .output-footer {
+        display: flex;
+        align-items: center;
+        min-height: 45px;
+        justify-content: center;
+        gap: 10px;
+        padding: 0 20px;
+        border-top: 1px solid var(--line);
+        color: #8a9087;
+        font-size: 10px;
+      }
+      .output-footer .count {
+        font-variant-numeric: tabular-nums;
+      }
+
+      .bottom-note {
+        display: flex;
+        justify-content: center;
+        gap: 7px;
+        margin: 23px 0 0;
+        color: #979c94;
+        font-size: 11px;
+      }
+      .bottom-note svg {
+        width: 13px;
+        height: 13px;
+        color: var(--green);
+      }
+
+      .template-textarea {
+        color: #dce6dd;
+        background: #151d19;
+      }
+      .hint strong {
+        color: #c5d1c7;
+      }
+      .button {
+        color: #d2ddd4;
+        background: #202a24;
+      }
+      .button:hover {
+        border-color: #48574c;
+        background: #27332b;
+      }
+      .button-primary {
+        border-color: #80bd8c;
+        color: #132017;
+        background: #80bd8c;
+      }
+      .button-primary:hover {
+        border-color: #9bd2a4;
+        background: #9bd2a4;
+      }
+      .field-name {
+        color: #d2ddd4;
+      }
+      .value-input {
+        color: var(--ink);
+        background: #151d19;
+      }
+      .empty-icon {
+        color: #9aa79d;
+      }
+      .live-badge {
+        color: #9aa79d;
+      }
+      .output {
+        color: #d3ded5;
+        background:
+          linear-gradient(#1b2420 31px, transparent 31px) 0 22px / 100% 32px,
+          #1b2420;
+      }
+      .output.is-empty {
+        color: #89968d;
+      }
+      .output-footer {
+        color: #9aa79d;
+      }
+      .bottom-note {
+        color: #929f95;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      @media (max-width: 760px) {
+        .shell {
+          width: min(620px, calc(100% - 32px));
+          padding-top: 22px;
+        }
+        .topbar {
+          margin-bottom: 45px;
+        }
+        .workspace {
+          grid-template-columns: 1fr;
+        }
+        .output {
+          min-height: 265px;
+        }
+      }
+      @media (max-width: 440px) {
+        .shell {
+          width: calc(100% - 24px);
+        }
+        .top-actions .button {
+          min-height: 34px;
+          padding: 0 9px;
+          font-size: 11px;
+        }
+        .panel-header,
+        .template-wrap,
+        .fields-area {
+          padding-right: 15px;
+          padding-left: 15px;
+        }
+        .panel-footer {
+          padding-right: 15px;
+          padding-left: 15px;
+        }
+        .preview-toolbar {
+          padding-right: 13px;
+          padding-left: 15px;
+        }
+        .button-primary {
+          padding: 0 10px;
+        }
+        .output {
+          padding-right: 16px;
+          padding-left: 16px;
+        }
+        .intro-copy {
+          font-size: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <a aria-label="Tempy home" href="#" class="brand">
+          <span aria-hidden="true" class="brand-mark">[</span>
+          <span class="brand-name">Tempy</span>
+        </a>
+        <div class="top-actions">
+          <button id="sample-button" type="button" class="button">
+            Load example
+          </button>
+          <button class="button" id="clear-button" type="button">
+            Clear all
+          </button>
+        </div>
+      </header>
+
+      <section class="intro" aria-labelledby="page-title">
+        <h1 id="page-title">Make a template<br />your own.</h1>
+        <p class="intro-copy">
+          Write once, fill in the details, and get a ready to use version. Put
+          anything you want to change inside <code>[square brackets]</code>.
+        </p>
+      </section>
+
+      <section class="workspace" aria-label="Template editor">
+        <section aria-labelledby="template-heading" class="panel">
+          <header class="panel-header">
+            <div class="section-heading">
+              <div>
+                <h2 id="template-heading" class="heading-title">
+                  <span class="step">1</span>Your template
+                </h2>
+                <p class="heading-caption">Add your Template</p>
+              </div>
+            </div>
+          </header>
+          <div class="template-wrap">
+            <label for="template-input" class="sr-only">Template text</label>
+            <textarea
+              id="template-input"
+              placeholder="Hi [name],&#10;&#10;Thanks for reaching out about [topic]. I'll get back to you by [date]."
+              spellcheck="false"
+              class="template-textarea"
+            ></textarea>
+          </div>
+          <div class="panel-footer">
+            <span class="hint" id="placeholder-count" aria-live="polite"
+              >0 placeholders</span
+            >
+          </div>
+
+          <header class="panel-header">
+            <div class="section-heading">
+              <div>
+                <h2 class="heading-title">
+                  <span class="step">2</span>Fill in your details
+                </h2>
+                <p class="heading-caption">Each bracket becomes a field</p>
+              </div>
+            </div>
+          </header>
+          <div id="fields-area" class="fields-area">
+            <div id="empty-state" class="empty-state">
+              <span class="empty-icon" aria-hidden="true">[ ]</span>
+              <p>Your template fields will show up here.</p>
+            </div>
+            <div class="fields-list" id="fields-list"></div>
+          </div>
+        </section>
+
+        <section aria-labelledby="preview-heading" class="panel preview-panel">
+          <header class="preview-toolbar">
+            <div>
+              <h2 id="preview-heading" class="heading-title">
+                <span class="step">3</span>Your finished text
+              </h2>
+              <span class="live-badge"
+                ><span class="live-dot" aria-hidden="true"></span>Live
+                preview</span
+              >
+            </div>
+            <button
+              class="button button-primary"
+              id="copy-button"
+              type="button"
+              disabled
+            >
+              <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
+                <rect
+                  x="7"
+                  y="6"
+                  width="9"
+                  height="11"
+                  rx="1.5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M13 6V4.5A1.5 1.5 0 0 0 11.5 3h-7A1.5 1.5 0 0 0 3 4.5v9A1.5 1.5 0 0 0 4.5 15H7"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+              </svg>
+              <span id="copy-label">Copy text</span>
+            </button>
+          </header>
+          <pre aria-live="polite" class="output is-empty" id="output">
+Your finished text will appear here.</pre>
+          <footer class="output-footer">
+            <span id="preview-status">Waiting for a template</span>
+            <span id="character-count" class="count">0 characters</span>
+          </footer>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      (() => {
+        const templateInput = document.getElementById("template-input");
+        const fieldsList = document.getElementById("fields-list");
+        const emptyState = document.getElementById("empty-state");
+        const output = document.getElementById("output");
+        const countLabel = document.getElementById("placeholder-count");
+        const previewStatus = document.getElementById("preview-status");
+        const characterCount = document.getElementById("character-count");
+        const copyButton = document.getElementById("copy-button");
+        const copyLabel = document.getElementById("copy-label");
+        const announcer = document.getElementById("announcer");
+        const values = new Map();
+        let copyTimer;
+
+        function getPlaceholders(text) {
+          const counts = new Map();
+          for (const match of text.matchAll(/\[([^\[\]\r\n]+)\]/g)) {
+            const name = match[1].trim();
+            if (name) counts.set(name, (counts.get(name) || 0) + 1);
+          }
+          return counts;
+        }
+
+        function renderPreview(template, placeholders) {
+          const result = template.replace(
+            /\[([^\[\]\r\n]+)\]/g,
+            (match, rawName) => {
+              const name = rawName.trim();
+              return placeholders.has(name) ? values.get(name) || "" : match;
+            },
+          );
+          const hasTemplate = template.trim().length > 0;
+          output.textContent = hasTemplate
+            ? result
+            : "Your finished text will appear here.";
+          output.classList.toggle("is-empty", !hasTemplate);
+          previewStatus.textContent = hasTemplate
+            ? placeholders.size
+              ? `${placeholders.size} ${placeholders.size === 1 ? "field" : "fields"} to fill`
+              : "Ready to copy"
+            : "Waiting for a template";
+          characterCount.textContent = `${hasTemplate ? result.length : 0} ${result.length === 1 ? "character" : "characters"}`;
+          copyButton.disabled = !hasTemplate;
+        }
+
+        function update() {
+          const template = templateInput.value;
+          const placeholders = getPlaceholders(template);
+
+          for (const name of values.keys()) {
+            if (!placeholders.has(name)) values.delete(name);
+          }
+
+          fieldsList.replaceChildren();
+          emptyState.hidden = placeholders.size > 0;
+          for (const [name, occurrences] of placeholders) {
+            const field = document.createElement("div");
+            field.className = "field";
+
+            const labelRow = document.createElement("div");
+            labelRow.className = "field-label";
+            const label = document.createElement("label");
+            label.className = "field-name";
+            label.textContent = name;
+            const input = document.createElement("input");
+            input.className = "value-input";
+            input.type = "text";
+            input.autocomplete = "off";
+            input.value = values.get(name) || "";
+            input.dataset.placeholder = name;
+            label.htmlFor = `field-${[...placeholders.keys()].indexOf(name)}`;
+            input.id = label.htmlFor;
+
+            const occurrence = document.createElement("span");
+            occurrence.className = "field-occurrences";
+            occurrence.textContent =
+              occurrences > 1 ? `used ${occurrences} times` : "";
+            labelRow.append(label, occurrence);
+            field.append(labelRow, input);
+            fieldsList.append(field);
+          }
+
+          const placeholderTotal = [...placeholders.values()].reduce(
+            (sum, count) => sum + count,
+            0,
+          );
+          countLabel.textContent = `${placeholderTotal} ${placeholderTotal === 1 ? "placeholder" : "placeholders"}`;
+          renderPreview(template, placeholders);
+        }
+
+        templateInput.addEventListener("input", update);
+        fieldsList.addEventListener("input", (event) => {
+          const input = event.target.closest(".value-input");
+          if (!input) return;
+          values.set(input.dataset.placeholder, input.value);
+          renderPreview(
+            templateInput.value,
+            getPlaceholders(templateInput.value),
+          );
+        });
+
+        document
+          .getElementById("sample-button")
+          .addEventListener("click", () => {
+            templateInput.value =
+              "Hi [name],\\n\\nThanks for reaching out about [topic]. I'll get back to you by [date].\\n\\nBest,\\n[your name]";
+            values.clear();
+            update();
+            templateInput.focus();
+          });
+
+        document
+          .getElementById("clear-button")
+          .addEventListener("click", () => {
+            templateInput.value = "";
+            values.clear();
+            update();
+            templateInput.focus();
+          });
+
+        copyButton.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(output.textContent);
+            copyLabel.textContent = "Copied!";
+            announcer.textContent = "Finished text copied to clipboard.";
+            clearTimeout(copyTimer);
+            copyTimer = setTimeout(() => {
+              copyLabel.textContent = "Copy text";
+            }, 1600);
+          } catch (error) {
+            announcer.textContent =
+              "Couldn't copy automatically. Select the preview text and copy it manually.";
+            previewStatus.textContent = "Copy failed — select the text to copy";
+          }
+        });
+
+        update();
+      })();
+    </script>
+  </body>
+</html>
