@@ -77,30 +77,19 @@
 
       .topbar {
         justify-content: space-between;
-        margin-bottom: 66px;
+        margin-bottom: 24px;
       }
       .brand {
-        gap: 11px;
         color: var(--ink);
         text-decoration: none;
       }
-      .brand-mark {
-        display: grid;
-        width: 36px;
-        height: 36px;
-        place-items: center;
-        border-radius: 12px;
-        color: white;
-        background: var(--green);
-        font-family: Georgia, serif;
-        font-size: 22px;
-        font-weight: 700;
-        box-shadow: 0 5px 12px rgb(55 107 74 / 20%);
-      }
       .brand-name {
-        font-size: 17px;
-        font-weight: 750;
-        letter-spacing: -0.04em;
+        color: var(--green);
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 25px;
+        font-style: italic;
+        font-weight: 700;
+        letter-spacing: -0.07em;
       }
       .top-actions {
         gap: 10px;
@@ -118,14 +107,6 @@
       .intro {
         max-width: 630px;
         margin-bottom: 35px;
-      }
-      h1 {
-        margin: 0;
-        font-family: Georgia, "Times New Roman", serif;
-        font-size: clamp(38px, 5vw, 56px);
-        font-weight: 500;
-        letter-spacing: -0.055em;
-        line-height: 1.04;
       }
       .intro-copy {
         max-width: 530px;
@@ -160,13 +141,17 @@
       }
 
       .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
         min-height: 72px;
         padding: 16px 21px;
         border-bottom: 1px solid var(--line);
       }
       .section-heading {
         justify-content: space-between;
-        width: 100%;
+        flex: 1;
         gap: 12px;
       }
       .heading-title {
@@ -482,7 +467,16 @@
           padding-top: 22px;
         }
         .topbar {
-          margin-bottom: 45px;
+          margin-bottom: 24px;
+        }
+        .template-header {
+          flex-wrap: wrap;
+        }
+        .template-header .section-heading {
+          flex: 1 0 100%;
+        }
+        .template-header .top-actions {
+          margin-left: auto;
         }
         .workspace {
           grid-template-columns: 1fr;
@@ -531,21 +525,11 @@
     <main class="shell">
       <header class="topbar">
         <a aria-label="Tempy home" href="#" class="brand">
-          <span aria-hidden="true" class="brand-mark">[</span>
           <span class="brand-name">Tempy</span>
         </a>
-        <div class="top-actions">
-          <button id="sample-button" type="button" class="button">
-            Load example
-          </button>
-          <button class="button" id="clear-button" type="button">
-            Clear all
-          </button>
-        </div>
       </header>
 
-      <section class="intro" aria-labelledby="page-title">
-        <h1 id="page-title">Make a template<br />your own.</h1>
+      <section class="intro">
         <p class="intro-copy">
           Write once, fill in the details, and get a ready to use version. Put
           anything you want to change inside <code>[square brackets]</code>.
@@ -554,7 +538,7 @@
 
       <section class="workspace" aria-label="Template editor">
         <section aria-labelledby="template-heading" class="panel">
-          <header class="panel-header">
+          <header class="panel-header template-header">
             <div class="section-heading">
               <div>
                 <h2 id="template-heading" class="heading-title">
@@ -562,6 +546,14 @@
                 </h2>
                 <p class="heading-caption">Add your Template</p>
               </div>
+            </div>
+            <div class="top-actions">
+              <button id="sample-button" type="button" class="button">
+                Load example
+              </button>
+              <button class="button" id="clear-button" type="button">
+                Clear all
+              </button>
             </div>
           </header>
           <div class="template-wrap">
