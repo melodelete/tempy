@@ -2,6 +2,8 @@
 
 Tempy is a template filler. Write text with placeholders in square brackets, fill in the generated fields, then copy the ready to use version.
 
+[Use it here](https://melodelete.github.io/tempy/)
+
 ## Use it
 1. Enter a template
 2. Fill in the fields that appear.
